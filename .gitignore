@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
+
+# Data & runtime
+data/
+*.db
+*.log
+
+# Config overrides (may contain secrets)
+config/local.yaml
+.env
+
+# Extensions (user-provided, may be large)
+extensions/nopecha/
+extensions/discord-token-login/
+
+# Node
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+.docker/
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/

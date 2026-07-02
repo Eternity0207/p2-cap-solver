@@ -1,0 +1,95 @@
+# Cap-Solver default configuration
+# Override via CAPSOLVER_* environment variables or config/local.yaml
+
+server:
+  host: "0.0.0.0"
+  port: 8080
+  api_key: ""  # Set CAPSOLVER_API_KEY or server.api_key for auth
+  cors_origins: ["*"]
+
+browser:
+  headless: false  # Cloudflare detects headless — use Xvfb on servers instead
+  max_concurrent: 1  # required when shared_profile=true (prevents profile lock crashes)
+  job_timeout_seconds: 300
+  navigation_timeout_ms: 60000
+  action_timeout_ms: 30000
+  viewport_width: 1280
+  viewport_height: 720
+  # Do NOT add --no-sandbox or automation flags — Cloudflare detects them
+  args: []
+  extensions:
+    nopecha_path: "extensions/nopecha"
+    discord_token_path: "extensions/discord-token-login"
+    load_nopecha: true
+  user_data_base: "data/browser_profiles"
+  executable_path: ""   # auto: brave > chrome > chromium
+  shared_profile: true  # keep cookies/cf_clearance between jobs
+  shared_profile_id: "default"
+  load_extensions_at_startup: true
+  load_extensions_after_cloudflare: false
+  engine: zendriver
+
+jobs:
+  max_retries: 3
+  retry_delay_seconds: 5
+  cleanup_after_hours: 24
+  store_path: "data/jobs.db"
+  artifacts_dir: "data/artifacts"
+
+automation:
+  poketwo:
+    verify_url_pattern: "verify.poketwo.net/captcha/"
+    captcha:
+      # auto = use API key if set, else extension; api = NopeCHA API only; extension = wait for extension
+      mode: "auto"
+      nopecha_api_key: ""
+      solved_selector: 'input[name="cf-turnstile-response"]'
+      solved_attribute: "value"
+      max_wait_seconds: 120
+      poll_interval_seconds: 2
+    cloudflare:
+      max_wait_seconds: 240
+      cf_clearance_required: true
+    verify_button:
+      text: "Verify"
+      selectors:
+        - 'button:has-text("Verify")'
+        - 'input[type="submit"][value*="Verify"]'
+        - 'a:has-text("Verify")'
+    discord:
+      oauth_url_pattern: "discord.com/oauth2"
+      authorize_button:
+        text: "Authorize"
+        selectors:
+          - 'button:has-text("Authorize")'
+          - 'span:has-text("Authorize")'
+      token_login:
+        # Extension popup interaction
+        popup_path: "popup/popup.html"
+        token_input_selectors:
+          - 'input[type="text"]'
+          - 'textarea'
+          - '#token'
+          - 'input[name="token"]'
+        submit_selectors:
+          - 'button:has-text("Login")'
+          - 'button:has-text("Submit")'
+          - 'button[type="submit"]'
+        wait_after_login_seconds: 5
+    success:
+      text_patterns:
+        - "verified"
+        - "Verified"
+        - "successfully verified"
+      max_wait_seconds: 60
+
+logging:
+  level: "INFO"
+  format: "json"  # json or console
+  file: "data/logs/cap-solver.log"
+  rotation: "50 MB"
+  retention: "7 days"
+
+platform:
+  # Auto-detected; override if needed
+  display: ":99"  # Xvfb display for Linux headless

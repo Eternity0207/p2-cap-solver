@@ -1,0 +1,10 @@
+{
+  "name": "cap-solver-puppeteer",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "puppeteer": "^24.2.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  }
+}
