@@ -78,10 +78,10 @@ automation:
         wait_after_login_seconds: 5
     success:
       text_patterns:
-        - "verified"
-        - "Verified"
-        - "successfully verified"
-      max_wait_seconds: 60
+        - "thanks for verifying"
+        - "you can now close this page"
+        - "success!"
+      max_wait_seconds: 90
 
 logging:
   level: "INFO"

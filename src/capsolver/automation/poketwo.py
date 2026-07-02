@@ -27,6 +27,14 @@ _CAPTCHA_SOLVED_JS = """() => {
     return false;
 }"""
 
+_SUCCESS_JS = """() => {
+    const body = (document.body?.innerText || '').toLowerCase();
+    if (body.includes('thanks for verifying')) return true;
+    if (body.includes('you can now close this page')) return true;
+    if (/\\bsuccess!\\b/.test(body)) return true;
+    return false;
+}"""
+
 _FIND_VERIFY_JS = """() => {
     const nodes = document.querySelectorAll('button, input[type="submit"], input[type="button"], a');
     for (const el of nodes) {
@@ -117,7 +125,7 @@ class PoketwoAutomation(AutomationExecutor):
 
             job.status = JobStatus.VERIFYING
             await progress("done", 90, "Checking verified")
-            verified = await self._check_verified(page, job.url)
+            verified = await self._check_verified(page, job.url, job)
             await shot("06_final")
 
             if verified:
@@ -237,20 +245,39 @@ class PoketwoAutomation(AutomationExecutor):
                 pass
         return await page.click_by_text("Authorize", timeout=15)
 
-    async def _check_verified(self, page: PageAdapter, url: str) -> bool:
+    async def _check_verified(self, page: PageAdapter, url: str, job: Job | None = None) -> bool:
         patterns = [p.lower() for p in self.poketwo.success.text_patterns]
-        for _ in range(self.poketwo.success.max_wait_seconds // 2):
-            cur = await page.current_url()
-            if "poketwo" not in cur:
-                try:
-                    await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-                except Exception:
-                    pass
+        waits = self.poketwo.success.max_wait_seconds // 2
+        for i in range(waits):
             try:
+                if await page.safe_evaluate(_SUCCESS_JS):
+                    if job:
+                        job.add_log("success", "Poketwo success screen detected")
+                    return True
                 body = (await page.inner_text("body")).lower()
                 if any(p in body for p in patterns):
+                    if job:
+                        job.add_log("success", "Poketwo success text matched")
                     return True
             except Exception:
                 pass
+
+            cur = await page.current_url()
+            if "verify.poketwo.net" not in cur:
+                try:
+                    await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+                    await asyncio.sleep(2)
+                except Exception:
+                    pass
+            elif job and i and i % 5 == 0:
+                job.add_log("success", f"Waiting for success screen... ({i * 2}s)")
+
             await asyncio.sleep(2)
+
+        if job:
+            try:
+                snippet = (await page.inner_text("body"))[:120].replace("\n", " ")
+                job.add_log("success", f"Success screen not found. Page: {snippet}", level="warning")
+            except Exception:
+                job.add_log("success", "Success screen not found", level="warning")
         return False
