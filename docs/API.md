@@ -2,8 +2,6 @@
 
 Base URL: `http://localhost:8080/api/v1`
 
-Interactive docs: `/docs` (Swagger UI) | `/redoc` (ReDoc)
-
 ## Authentication
 
 When `CAPSOLVER_API_KEY` is set, include the header on all endpoints except `/health`:
@@ -162,20 +160,20 @@ JOB=$(curl -s -X POST "$API/jobs" \
     "discord_token": "YOUR_TOKEN"
   }')
 
-JOB_ID=$(echo "$JOB" | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])")
+JOB_ID=$(echo "$JOB" | node -e "process.stdin.on('data',d=>console.log(JSON.parse(d).id))")
 echo "Job ID: $JOB_ID"
 
 # Poll status
 while true; do
   STATUS=$(curl -s "$API/jobs/$JOB_ID" -H "X-API-Key: $KEY" \
-    | python3 -c "import sys,json; print(json.load(sys.stdin)['status'])")
+    | node -e "process.stdin.on('data',d=>console.log(JSON.parse(d).status))")
   echo "Status: $STATUS"
   [[ "$STATUS" == "completed" || "$STATUS" == "failed" ]] && break
   sleep 3
 done
 
 # Get report
-curl -s "$API/jobs/$JOB_ID/report" -H "X-API-Key: $KEY" | python3 -m json.tool
+curl -s "$API/jobs/$JOB_ID/report" -H "X-API-Key: $KEY" | node -e "process.stdin.on('data',d=>console.log(JSON.stringify(JSON.parse(d),null,2)))"
 ```
 
 ## Error Responses

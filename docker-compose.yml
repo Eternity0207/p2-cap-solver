@@ -9,6 +9,7 @@ services:
       - "${PORT:-8080}:8080"
     environment:
       - CAPSOLVER_API_KEY=${CAPSOLVER_API_KEY:-}
+      - NOPECHA_API_KEY=${NOPECHA_API_KEY:-}
       - CAPSOLVER_BASE_DIR=/app
       - DISPLAY=:99
     volumes:

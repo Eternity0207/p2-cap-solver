@@ -1,16 +1,14 @@
 # Cap-Solver
 
-FastAPI service for Poketwo verification automation.  
+Node.js + Playwright service for Poketwo verification automation.  
 Input is exactly what you asked for: `token` and `link`.
 
-## Run on VPS
+## Run locally
 
 ```bash
 git clone <your-repo-url>
 cd Cap-Solver
-python -m venv .venv
-. .venv/bin/activate
-pip install -e .
+npm install
 cp .env.example .env
 ```
 
@@ -24,17 +22,22 @@ NOPECHA_API_KEY=your-nopecha-key
 Start server:
 
 ```bash
-.venv/bin/python -m capsolver.main --host 0.0.0.0 --port 8080
+npm start
 ```
 
-## FastAPI Endpoints
+Or with custom host/port:
 
-- `GET /api/v1/health` - health check
-- `POST /api/v1/verify` - submit verification with `token` + `link`
-- `POST /api/v1/jobs` - full job API (advanced)
-- `GET /api/v1/jobs/{job_id}` - fetch job status/details
+```bash
+node src/index.js --host 0.0.0.0 --port 8080
+```
 
-Swagger UI: `http://<host>:8080/docs`
+## API Endpoints
+
+- `GET /api/v1/health` — health check
+- `POST /api/v1/verify` — submit verification with `token` + `link`
+- `POST /api/v1/jobs` — full job API (advanced)
+- `GET /api/v1/jobs/{job_id}` — fetch job status/details
+- `WS /api/v1/ws/jobs/{job_id}` — live job updates
 
 ## Curl Examples
 
@@ -62,8 +65,15 @@ curl -X POST "http://localhost:8080/api/v1/verify?wait=600" \
   }'
 ```
 
+## Stack
+
+- **Runtime:** Node.js 20+
+- **Browser:** Playwright (Chromium / Brave / Chrome)
+- **HTTP:** Express
+- **Jobs:** SQLite via sql.js
+
 ## Notes
 
-- Extensions are fetched from Chrome Web Store each run (no local extension folder required).
-- Keep Brave/Chrome installed on the VPS.
-- For Linux servers without display, Xvfb is auto-used when available.
+- Extensions can be placed in `extensions/nopecha` and `extensions/discord-token-login`, or auto-downloaded from the Chrome Web Store.
+- Keep Brave/Chrome installed on the host for best Cloudflare bypass.
+- For Linux servers without a display, Xvfb is auto-used when available (`browser.headless` must stay `false`).
