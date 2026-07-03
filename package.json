@@ -1,10 +1,27 @@
 {
-  "name": "cap-solver-puppeteer",
-  "private": true,
+  "name": "cap-solver",
+  "version": "1.0.0",
+  "description": "Playwright-based browser automation for Discord captcha verification",
   "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "postinstall": "playwright install chromium"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
-    "puppeteer": "^24.2.0",
-    "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.2"
+    "adm-zip": "^0.5.16",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "js-yaml": "^4.1.0",
+    "playwright": "^1.51.0",
+    "proper-lockfile": "^4.1.2",
+    "sql.js": "^1.13.0",
+    "uuid": "^11.1.0",
+    "ws": "^8.18.1"
   }
 }

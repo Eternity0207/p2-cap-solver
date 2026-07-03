@@ -1,15 +1,9 @@
-# Python
+# Python (removed — Node.js only)
 __pycache__/
 *.py[cod]
-*$py.class
-*.egg-info/
-dist/
-build/
-.eggs/
-*.egg
 .venv/
 venv/
-env/
+*.egg-info/
 
 # Data & runtime
 data/
@@ -29,7 +23,6 @@ node_modules/
 
 # IDE
 .idea/
-.vscode/
 *.swp
 *.swo
 
@@ -39,8 +32,7 @@ Thumbs.db
 
 # Docker
 .docker/
-
-# Test artifacts
-.pytest_cache/
-.coverage
-htmlcov/
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
+.gitignore

@@ -56,8 +56,7 @@ cat << 'INSTRUCTIONS'
 
 ## Verify Installation
 
-   ./deploy.sh setup
-   # Should not warn about missing extensions
+   ./scripts/setup-extensions.sh
 
 INSTRUCTIONS
 
@@ -66,7 +65,7 @@ echo ""
 echo "=== Current Status ==="
 for ext in nopecha discord-token-login; do
     if [ -f "$EXT_DIR/$ext/manifest.json" ]; then
-        name=$(python3 -c "import json; print(json.load(open('$EXT_DIR/$ext/manifest.json')).get('name','unknown'))" 2>/dev/null || echo "unknown")
+        name=$(node -e "console.log(JSON.parse(require('fs').readFileSync('$EXT_DIR/$ext/manifest.json','utf8')).name||'unknown')" 2>/dev/null || echo "unknown")
         echo "✓ $ext: $name"
     else
         echo "✗ $ext: NOT INSTALLED"
